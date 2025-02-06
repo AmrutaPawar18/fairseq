@@ -3,7 +3,7 @@
 hydra:
   job:
     config:
-      override_dirname:
+      override_dirname: field(default_factory=OverrideDirname)
         kv_sep: ':'
         item_sep: '__'
         exclude_keys:
