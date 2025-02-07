@@ -12,7 +12,7 @@ from contextlib import ExitStack
 
 from fairseq.dataclass import FairseqDataclass
 from fairseq.dataclass.utils import merge_with_parent
-from hydra.core.config_store import ConfigStore
+#from hydra.core.config_store import ConfigStore
 from omegaconf import open_dict, OmegaConf
 
 from .composite_encoder import CompositeEncoder
@@ -125,6 +125,10 @@ def register_model(name, dataclass=None):
     Args:
         name (str): the name of the model
     """
+    
+    # Global registry to store model configurations
+    global MODEL_CONFIG_REGISTRY
+    MODEL_CONFIG_REGISTRY = {}
 
     def register_model_cls(cls):
         if name in MODEL_REGISTRY:
@@ -144,10 +148,19 @@ def register_model(name, dataclass=None):
         if dataclass is not None:
             MODEL_DATACLASS_REGISTRY[name] = dataclass
 
-            cs = ConfigStore.instance()
+            # Create OmegaConf configuration instead of using ConfigStore
             node = dataclass()
             node._name = name
-            cs.store(name=name, group="model", node=node, provider="fairseq")
+            
+            # Convert dataclass to dict and then to OmegaConf
+            config_dict = {
+                "model": {
+                    name: OmegaConf.create(OmegaConf.to_container(node))
+                }
+            }
+            
+            # Store in our registry
+            MODEL_CONFIG_REGISTRY[name] = OmegaConf.create(config_dict)
 
             @register_model_architecture(name, name)
             def noop(_):
@@ -156,6 +169,17 @@ def register_model(name, dataclass=None):
         return cls
 
     return register_model_cls
+
+def get_model_config(name):
+    """Helper function to retrieve model configuration"""
+    return MODEL_CONFIG_REGISTRY.get(name)
+
+def merge_model_config(base_config, model_name):
+    """Helper function to merge model config with base config"""
+    model_config = get_model_config(model_name)
+    if model_config is not None:
+        return OmegaConf.merge(base_config, model_config)
+    return base_config
 
 
 def register_model_architecture(model_name, arch_name):
