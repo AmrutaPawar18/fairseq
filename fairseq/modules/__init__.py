@@ -33,7 +33,7 @@ from .linearized_convolution import LinearizedConvolution
 from .multihead_attention import MultiheadAttention
 # from .positional_embedding import PositionalEmbedding
 # from .same_pad import SamePad, SamePad2d
-# from .scalar_bias import ScalarBias
+from .scalar_bias import ScalarBias
 # from .sinusoidal_positional_embedding import SinusoidalPositionalEmbedding
 # from .transformer_sentence_encoder_layer import TransformerSentenceEncoderLayer
 # from .transformer_sentence_encoder import TransformerSentenceEncoder
