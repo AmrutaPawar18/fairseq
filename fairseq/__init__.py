@@ -28,7 +28,7 @@ sys.modules["fairseq.progress_bar"] = progress_bar
 # initialize hydra
 from fairseq.dataclass.initialize import hydra_init
 
-hydra_init()
+config = hydra_init()
 
 import fairseq.criterions  # noqa
 import fairseq.distributed  # noqa

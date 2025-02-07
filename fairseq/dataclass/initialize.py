@@ -12,25 +12,14 @@
 # from dataclasses import field
 
 import logging
-from hydra.core.config_store import ConfigStore
-from fairseq.dataclass.configs import FairseqConfig
 from omegaconf import DictConfig, OmegaConf
+from fairseq.dataclass.configs import FairseqConfig
 from dataclasses import dataclass, field
-from typing import Optional, Any
 
 logger = logging.getLogger(__name__)
 
-@dataclass
-class OverrideDirname:
-    kv_sep: str = ":"
-    item_sep: str = "__"
-    exclude_keys: list = field(default_factory=lambda: ["fb_run_config", "distributed_training.distributed_port"])
-
-def hydra_init(cfg_name="config") -> None:
-    cs = ConfigStore.instance()
-    
-    # Create base hydra config
-    base_hydra_config = {
+def create_default_config():
+    config = {
         "hydra": {
             "job": {
                 "config": {
@@ -39,26 +28,29 @@ def hydra_init(cfg_name="config") -> None:
                         "item_sep": "__",
                         "exclude_keys": ["fb_run_config", "distributed_training.distributed_port"]
                     }
-                }
+                },
+                "name": "default"
+            },
+            "run": {
+                "dir": "."
             }
         }
     }
     
-    # Store hydra config as DictConfig
-    hydra_conf = OmegaConf.create(base_hydra_config)
-    cs.store(name="hydra_config", node=hydra_conf)
+    # Convert to OmegaConf for compatibility
+    return OmegaConf.create(config)
 
-    # Store FairseqConfig
-    cs.store(name=f"{cfg_name}", node=FairseqConfig)
-
-    # Store individual fields
-    for k in FairseqConfig.__dataclass_fields__:
-        v = FairseqConfig.__dataclass_fields__[k].default
-        try:
-            cs.store(name=k, node=v)
-        except BaseException:
-            logger.error(f"{k} - {v}")
-            raise
+def hydra_init(cfg_name="config") -> None:
+    # Create base configuration
+    config = create_default_config()
+    
+    # Merge with FairseqConfig defaults
+    fairseq_config = OmegaConf.structured(FairseqConfig)
+    config = OmegaConf.merge(config, fairseq_config)
+    
+    # Set the global config
+    OmegaConf.set_readonly(config, True)
+    return config
 
 
 # logger = logging.getLogger(__name__)
