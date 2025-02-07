@@ -4,10 +4,12 @@ hydra:
   job:
     config:
       override_dirname:
-        _target_: hydra.conf.JobConf.JobConfig.OverrideDirname
+        _target_: hydra.utils.OverrideDirname
         kv_sep: ':'
         item_sep: '__'
-        exclude_keys: ${oc.dict:['fb_run_config', 'distributed_training.distributed_port']}
+        exclude_keys: 
+          - fb_run_config
+          - distributed_training.distributed_port
   sweep:
     dir: /checkpoint/${env:USER}/${env:PREFIX}/${hydra.job.config_name}_${hydra.launcher.gpus_per_node}/${hydra.job.override_dirname}
   launcher:
