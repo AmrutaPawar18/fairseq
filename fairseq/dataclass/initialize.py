@@ -8,16 +8,33 @@ import logging
 from hydra.core.config_store import ConfigStore
 from fairseq.dataclass.configs import FairseqConfig
 from omegaconf import DictConfig, OmegaConf
-
+from hydra.conf import HydraConf, JobConf
+from dataclasses import field
 
 logger = logging.getLogger(__name__)
 
 
 def hydra_init(cfg_name="config") -> None:
-
     cs = ConfigStore.instance()
+    
+    # Store the Hydra override_dirname configuration
+    hydra_conf = HydraConf(
+        job=JobConf(
+            config=JobConf.JobConfig(
+                override_dirname=field(default_factory=lambda: JobConf.JobConfig.OverrideDirname(
+                    kv_sep=":",
+                    item_sep="__",
+                    exclude_keys=["fb_run_config", "distributed_training.distributed_port"]
+                ))
+            )
+        )
+    )
+    cs.store(name="hydra_config", node=hydra_conf)
+
+    # Store your existing FairseqConfig
     cs.store(name=f"{cfg_name}", node=FairseqConfig)
 
+    # Store individual fields from FairseqConfig
     for k in FairseqConfig.__dataclass_fields__:
         v = FairseqConfig.__dataclass_fields__[k].default
         try:
