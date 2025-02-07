@@ -12,20 +12,40 @@
 # from dataclasses import field
 
 import logging
-from fairseq.dataclass import patch_hydra
 from hydra.core.config_store import ConfigStore
 from fairseq.dataclass.configs import FairseqConfig
-from hydra.conf import HydraConf, JobConf
-from dataclasses import field
-from typing import List
+from omegaconf import DictConfig, OmegaConf
+from dataclasses import dataclass, field
+from typing import Optional, Any
 
 logger = logging.getLogger(__name__)
+
+@dataclass
+class OverrideDirname:
+    kv_sep: str = ":"
+    item_sep: str = "__"
+    exclude_keys: list = field(default_factory=lambda: ["fb_run_config", "distributed_training.distributed_port"])
 
 def hydra_init(cfg_name="config") -> None:
     cs = ConfigStore.instance()
     
-    # Simplified Hydra configuration since the patch handles the override_dirname
-    hydra_conf = HydraConf()
+    # Create base hydra config
+    base_hydra_config = {
+        "hydra": {
+            "job": {
+                "config": {
+                    "override_dirname": {
+                        "kv_sep": ":",
+                        "item_sep": "__",
+                        "exclude_keys": ["fb_run_config", "distributed_training.distributed_port"]
+                    }
+                }
+            }
+        }
+    }
+    
+    # Store hydra config as DictConfig
+    hydra_conf = OmegaConf.create(base_hydra_config)
     cs.store(name="hydra_config", node=hydra_conf)
 
     # Store FairseqConfig
