@@ -12,7 +12,7 @@
 # from dataclasses import field
 
 import logging
-import patch_hydra
+from fairseq.dataclass import patch_hydra
 from hydra.core.config_store import ConfigStore
 from fairseq.dataclass.configs import FairseqConfig
 from hydra.conf import HydraConf, JobConf
