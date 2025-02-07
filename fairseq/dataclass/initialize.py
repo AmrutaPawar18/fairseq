@@ -12,6 +12,7 @@
 # from dataclasses import field
 
 import logging
+import patch_hydra
 from hydra.core.config_store import ConfigStore
 from fairseq.dataclass.configs import FairseqConfig
 from hydra.conf import HydraConf, JobConf
@@ -20,24 +21,11 @@ from typing import List
 
 logger = logging.getLogger(__name__)
 
-def get_default_dirname():
-    return JobConf.JobConfig.OverrideDirname(
-        kv_sep=":",
-        item_sep="__",
-        exclude_keys=["fb_run_config", "distributed_training.distributed_port"]
-    )
-
 def hydra_init(cfg_name="config") -> None:
     cs = ConfigStore.instance()
     
-    # Configure Hydra with proper default_factory for mutable defaults
-    hydra_conf = HydraConf(
-        job=JobConf(
-            config=JobConf.JobConfig(
-                override_dirname=field(default_factory=get_default_dirname)
-            )
-        )
-    )
+    # Simplified Hydra configuration since the patch handles the override_dirname
+    hydra_conf = HydraConf()
     cs.store(name="hydra_config", node=hydra_conf)
 
     # Store FairseqConfig
