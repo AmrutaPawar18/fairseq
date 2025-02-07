@@ -3,13 +3,7 @@
 hydra:
   job:
     config:
-      override_dirname:
-        _target_: hydra.utils.OverrideDirname
-        kv_sep: ':'
-        item_sep: '__'
-        exclude_keys: 
-          - fb_run_config
-          - distributed_training.distributed_port
+      override_dirname: null
   sweep:
     dir: /checkpoint/${env:USER}/${env:PREFIX}/${hydra.job.config_name}_${hydra.launcher.gpus_per_node}/${hydra.job.override_dirname}
   launcher:

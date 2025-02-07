@@ -21,6 +21,29 @@ from omegaconf import DictConfig, OmegaConf, open_dict, _utils
 
 logger = logging.getLogger(__name__)
 
+from hydra.core.config_store import ConfigStore
+from hydra.conf import HydraConf, JobConf
+from dataclasses import field
+from typing import List
+
+def get_default_dirname() -> JobConf.JobConfig.OverrideDirname:
+    return JobConf.JobConfig.OverrideDirname(
+        kv_sep=":",
+        item_sep="__",
+        exclude_keys=["fb_run_config", "distributed_training.distributed_port"]
+    )
+
+cs = ConfigStore.instance()
+cs.store(
+    name="hydra_config",
+    node=HydraConf(
+        job=JobConf(
+            config=JobConf.JobConfig(
+                override_dirname=field(default_factory=get_default_dirname)
+            )
+        )
+    )
+)
 
 def eval_str_list(x, x_type=float):
     if x is None:
