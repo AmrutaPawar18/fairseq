@@ -9,9 +9,9 @@ from .adaptive_softmax import AdaptiveSoftmax
 #from .base_layer import BaseLayer
 from .beamable_mm import BeamableMM
 #from .character_token_embedder import CharacterTokenEmbedder
-# from .conv_tbc import ConvTBC
+from .conv_tbc import ConvTBC
 # from .cross_entropy import cross_entropy
-# from .downsampled_multihead_attention import DownsampledMultiHeadAttention
+from .downsampled_multihead_attention import DownsampledMultiHeadAttention
 # from .dynamic_convolution import DynamicConv, DynamicConv1dTBC, DynamicConv_scripatable
 # from .dynamic_crf_layer import DynamicCRF
 # from .ema_module import EMAModuleConfig, EMAModule
@@ -24,7 +24,7 @@ from .grad_multiply import GradMultiply
 # from .gumbel_vector_quantizer import GumbelVectorQuantizer
 # from .kmeans_vector_quantizer import KmeansVectorQuantizer
 # from .layer_drop import LayerDropModuleList
-# from .layer_norm import Fp32LayerNorm, LayerNorm
+from .layer_norm import Fp32LayerNorm, LayerNorm
 from .learned_positional_embedding import LearnedPositionalEmbedding
 # from .lightweight_convolution import LightweightConv, LightweightConv1dTBC
 from .linearized_convolution import LinearizedConvolution
