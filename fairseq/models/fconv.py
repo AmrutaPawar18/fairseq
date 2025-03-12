@@ -169,7 +169,7 @@ class FConvEncoder(FairseqEncoder):
         self.dropout_module = FairseqDropout(
             dropout, module_name=self.__class__.__name__
         )
-        self.num_attention_layers = 3
+        self.num_attention_layers = 6
 
         num_embeddings = len(dictionary)
         self.padding_idx = dictionary.pad()
