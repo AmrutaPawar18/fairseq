@@ -366,7 +366,7 @@ class AttentionLayer(nn.Module):
                 # Broadcast or reshape as needed
                 padding_sum = padding_sum.view(s.shape[0], 1)
             s = s - padding_sum
-            # s = s - encoder_padding_mask.float().sum(
+            # s = s - encoder_padding_mask.type_as(x).sum(
             #     dim=1, keepdim=True
             # )  # exclude padding
             s = s.unsqueeze(-1)
