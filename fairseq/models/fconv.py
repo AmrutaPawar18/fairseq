@@ -360,15 +360,15 @@ class AttentionLayer(nn.Module):
         if encoder_padding_mask is None:
             x = x * (s * math.sqrt(1.0 / s))
         else:
-            padding_sum = encoder_padding_mask.type_as(x).sum(dim=1, keepdim=True)
-            if s.shape != padding_sum.shape:
-                print(f"Shape mismatch: s {s.shape} vs padding_sum {padding_sum.shape}")
-                # Broadcast or reshape as needed
-                padding_sum = padding_sum.view(s.shape[0], 1)
-            s = s - padding_sum
-            # s = s - encoder_padding_mask.type_as(x).sum(
-            #     dim=1, keepdim=True
-            # )  # exclude padding
+            # padding_sum = encoder_padding_mask.type_as(x).sum(dim=1, keepdim=True)
+            # if s.shape != padding_sum.shape:
+            #     print(f"Shape mismatch: s {s.shape} vs padding_sum {padding_sum.shape}")
+            #     # Broadcast or reshape as needed
+            #     padding_sum = padding_sum.view(s.shape[0], 1)
+            # s = s - padding_sum
+            s = s - encoder_padding_mask.type_as(x).sum(
+                dim=1, keepdim=True
+            )  # exclude padding
             s = s.unsqueeze(-1)
             x = x * (s * s.rsqrt())
 
